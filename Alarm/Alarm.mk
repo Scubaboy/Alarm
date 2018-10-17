@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=
-Date                   :=15/10/18
+Date                   :=17/10/18
 CodeLitePath           :=/home/pi/.codelite
 LinkerName             :=/usr/bin/g++
 SharedObjectLinkerName :=/usr/bin/g++ -shared -fPIC
@@ -36,7 +36,7 @@ ObjectsFileList        :="Alarm.txt"
 PCHCompileFlags        :=
 MakeDirCommand         :=mkdir -p
 LinkOptions            :=  
-IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). $(IncludeSwitch)./Interfaces $(IncludeSwitch)./Sensors $(IncludeSwitch)./DataTypes $(IncludeSwitch)./Loggers $(IncludeSwitch)/usr/local/include/raspicam $(IncludeSwitch)./Controllers $(IncludeSwitch)./DeviceControllers $(IncludeSwitch)./Parsers 
+IncludePath            :=  $(IncludeSwitch). $(IncludeSwitch). $(IncludeSwitch)./Interfaces $(IncludeSwitch)./Sensors $(IncludeSwitch)./DataTypes $(IncludeSwitch)./Loggers $(IncludeSwitch)/usr/local/include/raspicam $(IncludeSwitch)./Controllers $(IncludeSwitch)./DeviceControllers $(IncludeSwitch)./Parsers $(IncludeSwitch)./ATCommandSequenceControllers 
 IncludePCH             := 
 RcIncludePath          := 
 Libs                   := $(LibrarySwitch)wiringPi $(LibrarySwitch)raspicam $(LibrarySwitch)boost_regex 
@@ -60,8 +60,8 @@ AS       := /usr/bin/as
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects0=$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IntermediateDirectory)/DataTypes_ReceivedMessage.cpp$(ObjectSuffix) $(IntermediateDirectory)/DataTypes_Command.cpp$(ObjectSuffix) $(IntermediateDirectory)/Sensors_PIRSensor.cpp$(ObjectSuffix) $(IntermediateDirectory)/cameras_IRCamera.cpp$(ObjectSuffix) $(IntermediateDirectory)/Loggers_FileLogger.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_CommandController.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_SystemStateCmdController.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_PiBaudLookUpController.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_PiWiringGPIOController.cpp$(ObjectSuffix) \
-	$(IntermediateDirectory)/Controllers_IRCameraController.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_PassiveActionController.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_ActiveActionController.cpp$(ObjectSuffix) $(IntermediateDirectory)/DeviceControllers_SerialPortConfigController.cpp$(ObjectSuffix) $(IntermediateDirectory)/DeviceControllers_CommsGSMDeviceDriver.cpp$(ObjectSuffix) $(IntermediateDirectory)/Parsers_ATResponseStringParser.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IntermediateDirectory)/DataTypes_ReceivedMessage.cpp$(ObjectSuffix) $(IntermediateDirectory)/DataTypes_Command.cpp$(ObjectSuffix) $(IntermediateDirectory)/DataTypes_ATCommand.cpp$(ObjectSuffix) $(IntermediateDirectory)/Sensors_PIRSensor.cpp$(ObjectSuffix) $(IntermediateDirectory)/cameras_IRCamera.cpp$(ObjectSuffix) $(IntermediateDirectory)/Loggers_FileLogger.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_CommandController.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_SystemStateCmdController.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_PiBaudLookUpController.cpp$(ObjectSuffix) \
+	$(IntermediateDirectory)/Controllers_PiWiringGPIOController.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_IRCameraController.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_PassiveActionController.cpp$(ObjectSuffix) $(IntermediateDirectory)/Controllers_ActiveActionController.cpp$(ObjectSuffix) $(IntermediateDirectory)/DeviceControllers_SerialPortConfigController.cpp$(ObjectSuffix) $(IntermediateDirectory)/DeviceControllers_CommsGSMDeviceDriver.cpp$(ObjectSuffix) $(IntermediateDirectory)/Parsers_ATResponseStringParser.cpp$(ObjectSuffix) $(IntermediateDirectory)/ATCommandSequenceControllers_ATCommandSequenceController.cpp$(ObjectSuffix) 
 
 
 
@@ -115,6 +115,14 @@ $(IntermediateDirectory)/DataTypes_Command.cpp$(DependSuffix): DataTypes/Command
 
 $(IntermediateDirectory)/DataTypes_Command.cpp$(PreprocessSuffix): DataTypes/Command.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/DataTypes_Command.cpp$(PreprocessSuffix) DataTypes/Command.cpp
+
+$(IntermediateDirectory)/DataTypes_ATCommand.cpp$(ObjectSuffix): DataTypes/ATCommand.cpp $(IntermediateDirectory)/DataTypes_ATCommand.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/pi/Documents/ShedAlarm/Alarm/DataTypes/ATCommand.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/DataTypes_ATCommand.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/DataTypes_ATCommand.cpp$(DependSuffix): DataTypes/ATCommand.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/DataTypes_ATCommand.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/DataTypes_ATCommand.cpp$(DependSuffix) -MM DataTypes/ATCommand.cpp
+
+$(IntermediateDirectory)/DataTypes_ATCommand.cpp$(PreprocessSuffix): DataTypes/ATCommand.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/DataTypes_ATCommand.cpp$(PreprocessSuffix) DataTypes/ATCommand.cpp
 
 $(IntermediateDirectory)/Sensors_PIRSensor.cpp$(ObjectSuffix): Sensors/PIRSensor.cpp $(IntermediateDirectory)/Sensors_PIRSensor.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/pi/Documents/ShedAlarm/Alarm/Sensors/PIRSensor.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/Sensors_PIRSensor.cpp$(ObjectSuffix) $(IncludePath)
@@ -219,6 +227,14 @@ $(IntermediateDirectory)/Parsers_ATResponseStringParser.cpp$(DependSuffix): Pars
 
 $(IntermediateDirectory)/Parsers_ATResponseStringParser.cpp$(PreprocessSuffix): Parsers/ATResponseStringParser.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/Parsers_ATResponseStringParser.cpp$(PreprocessSuffix) Parsers/ATResponseStringParser.cpp
+
+$(IntermediateDirectory)/ATCommandSequenceControllers_ATCommandSequenceController.cpp$(ObjectSuffix): ATCommandSequenceControllers/ATCommandSequenceController.cpp $(IntermediateDirectory)/ATCommandSequenceControllers_ATCommandSequenceController.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/pi/Documents/ShedAlarm/Alarm/ATCommandSequenceControllers/ATCommandSequenceController.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/ATCommandSequenceControllers_ATCommandSequenceController.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/ATCommandSequenceControllers_ATCommandSequenceController.cpp$(DependSuffix): ATCommandSequenceControllers/ATCommandSequenceController.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/ATCommandSequenceControllers_ATCommandSequenceController.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/ATCommandSequenceControllers_ATCommandSequenceController.cpp$(DependSuffix) -MM ATCommandSequenceControllers/ATCommandSequenceController.cpp
+
+$(IntermediateDirectory)/ATCommandSequenceControllers_ATCommandSequenceController.cpp$(PreprocessSuffix): ATCommandSequenceControllers/ATCommandSequenceController.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/ATCommandSequenceControllers_ATCommandSequenceController.cpp$(PreprocessSuffix) ATCommandSequenceControllers/ATCommandSequenceController.cpp
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)
