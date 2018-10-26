@@ -2,15 +2,15 @@
 #define PassiveActionController_H
 #include "IActionController.h"
 #include "ICameraController.h"
-#include "ICommsController.h"
+#include "ICommsDeviceDriver.h"
 
 class PassiveActionController : public IActionController
 {
 public:
-    PassiveActionController(ICameraController* cameraController, ICommsController* commsController);
+    PassiveActionController(ICameraController* cameraController, ICommsDeviceDriver* commsController);
     void Update(Action operatorRequestedAction);
 private:
     ICameraController* cameraController;
-    ICommsController* commsController;
+    ICommsDeviceDriver* commsController;
 };
 #endif

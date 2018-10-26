@@ -1,0 +1,8 @@
+Release/ATCommandSequenceControllers_ATCommandSequenceController.cpp.o: \
+ ATCommandSequenceControllers/ATCommandSequenceController.cpp \
+ ATCommandSequenceControllers/ATCommandSequenceController.h \
+ IATCommandSequenceController.h
+
+ATCommandSequenceControllers/ATCommandSequenceController.h:
+
+IATCommandSequenceController.h:

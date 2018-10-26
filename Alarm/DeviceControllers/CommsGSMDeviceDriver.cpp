@@ -7,12 +7,14 @@
 CommsGSMDeviceDriver::CommsGSMDeviceDriver(ILogger* logger, 
                                            IPortController* portController, 
                                            IGPIOController* gpioController, 
-                                           IStringResponseParser* stringParser)
+                                           IStringResponseParser* stringParser,
+                                           IATCommandSequenceController* atCommandController)
 {
    this->logger = logger;
    this->portController = portController;
    this->gpioController = gpioController;
    this->stringParser = stringParser;
+   this->atCommandController = atCommandController;
    this->isInitialised = false;
 }
 
@@ -64,17 +66,33 @@ ReceivedMessage CommsGSMDeviceDriver::GetNextMsg()
     
     if (this->isInitialised)
     {
+        auto commandList = this->atCommandController->ReadSMSCommandSequence();
+        std::vector<ATCommand>::iterator iter = commandList.begin();
+        auto fialedResponse = false;
         string testResponse;
         
-        this->portController->SendData("AT+CMGF=1");
-        testResponse = this->portController->ReadData(true);
-        if (this->stringParser->HasString(testResponse,"OK"))
+        
+        while (iter != commandList.end() && !fialedResponse)
         {
-            this->portController->SendData("AT+CMGL=\"REC UNREAD\"");
-            testResponse = this->portController->ReadData(true);
-            this->logger->LogInfo(testResponse);
-            msg = this->stringParser->BuildMessage(testResponse);
+            auto command = *iter;
             
+            this->portController->SendData(command.Command.c_str());
+            testResponse = this->portController->ReadData(true);
+          
+            
+            if (command.ExpectedResponse == "")
+            {
+                msg = this->stringParser->BuildMessage(testResponse);
+            }
+            else
+            {
+                if (!this->stringParser->HasString(testResponse,command.ExpectedResponse))
+                {    
+                    fialedResponse = true;
+                }
+            }   
+         
+            iter++;   
         }
     }
     
@@ -120,125 +138,30 @@ bool CommsGSMDeviceDriver::SendImage(CameraImage data, string number)
     {
         if (data.image != nullptr)
         {
-            //Initialise modem for MMS function
-            /*this->portController->SendData("AT+CGDCONT?");
-            this->portController->SendData("AT+CGATT=1");
-            this->portController->SendData("AT+CGDATA=?");
-            this->portController->SendData("AT+CGACT=1");*/
-            this->portController->SendData("AT+CMMSINIT");
-            testResponse = this->portController->ReadData(true);
-            if (this->stringParser->HasString(testResponse,"OK"))
+            auto commandList = this->atCommandController->SendMMSCommandSequence(data, number);
+            std::vector<ATCommand>::iterator iter = commandList.begin();
+            auto fialedResponse = false;
+            
+            while (iter != commandList.end() && !fialedResponse)
             {
-                //Set mms url
-                this->portController->SendData("AT+CMMSCURL=\"mmsc.mms.o2.co.uk:8002\"");
-                testResponse = this->portController->ReadData(true);
-                if (this->stringParser->HasString(testResponse,"OK"))
+                auto command = *iter;
+                
+                if (command.Payload == nullptr)
                 {
-                    //Set the bearer
-                    this->portController->SendData("AT+CMMSCID=1");
-                    testResponse = this->portController->ReadData(true);
-                    
-                    if (this->stringParser->HasString(testResponse,"OK"))
-                    {
-                        //Set MMS Proxy
-                        this->portController->SendData("AT+CMMSPROTO=\"82.132.254.1\",8080");
-                        testResponse = this->portController->ReadData(true);
-                    
-                        if (this->stringParser->HasString(testResponse,"OK"))
-                        {
-                            //Set PDU parameters
-                           // this->portController->SendData("AT+CMMSSENDCFG=6,3,0,0,2,4");
-                           // testResponse = this->portController->ReadData(true);
-                    
-                           //if (this->stringParser->HasString(testResponse,"OK"))
-                            //{
-                                //Set GPRS
-                                this->portController->SendData("AT+SAPBR=3,1,\"Contype\",\"GPRS\"");
-                                testResponse = this->portController->ReadData(true);
-                                
-                                if (this->stringParser->HasString(testResponse,"OK"))
-                                {
-                                    //Set APN
-                                    this->portController->SendData("AT+SAPBR=3,1,\"APN\",\"payandgo.o2.co.uk\"");
-                                    testResponse = this->portController->ReadData(true);
-                                
-                                    
-                                    if (this->stringParser->HasString(testResponse,"OK"))
-                                    {
-                                        this->portController->SendData("AT+SAPBR=3,1,\"USER\",\"payandgo\"");
-                                        testResponse = this->portController->ReadData(true);
-                                
-                                        if (this->stringParser->HasString(testResponse,"OK"))
-                                        {
-                                           this->portController->SendData("AT+SAPBR=3,1,\"PWD\",\"password\"");
-                                            testResponse = this->portController->ReadData(true);
-                                    
-                                            if (this->stringParser->HasString(testResponse,"OK"))
-                                            { 
-                                            
-                                                //Set Active bearer
-                                                this->portController->SendData("AT+SAPBR=1,1");
-                                                testResponse = this->portController->ReadData(true);
-                                        
-                                                if (this->stringParser->HasString(testResponse,"OK"))
-                                                {
-                                                    this->portController->SendData("AT+SAPBR=2,1");
-                                                    testResponse = this->portController->ReadData(true);
-                                        
-                                                    if (this->stringParser->HasString(testResponse,"+SAPBR"))
-                                                    {
-                                                        this->portController->SendData("AT+CMMSEDIT=1");
-                                                        testResponse = this->portController->ReadData(true);
-                                        
-                                                        if (this->stringParser->HasString(testResponse,"OK"))
-                                                        {
-                                                            stringstream msgToWrite;
-                                                            msgToWrite << "AT+CMMSDOWN=\"PIC\"," << data.size << ",2000000";//,\"Test.jpg\"";
-                                                            this->portController->SendData(msgToWrite.str().c_str());
-                                                            testResponse = this->portController->ReadData(true);
-                                        
-                                                            if (this->stringParser->HasString(testResponse,"CONNECT"))
-                                                            {
-                                                                this->portController->SendByteStream(data.image, data.size);
-                                                                testResponse = this->portController->ReadData(true);
-                                        
-                                                                if (this->stringParser->HasString(testResponse,"OK"))
-                                                                {
-                                                                     
-                                                                     this->portController->SendData("AT+CMMSRECP=\"07725589216\"");
-                                                                    testResponse = this->portController->ReadData(true);
-                                        
-                                                                    if (this->stringParser->HasString(testResponse,"OK"))
-                                                                    {
-                                                                        this->portController->SendData("AT+CMMSVIEW");
-                                                                        testResponse = this->portController->ReadData(true);
-                                        
-                                                                        if (this->stringParser->HasString(testResponse,"CMMSVIEW"))
-                                                                        {
-                                                                            this->portController->SendData("AT+CMMSSEND");
-                                                                            testResponse = this->portController->ReadData(true);
-                                        
-                                                                            if (this->stringParser->HasString(testResponse,"OK"))
-                                                                            {
-                                                                                
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            
-                                            }
-                                        }
-                                    }
-                                    
-                                }
-                           // }
-                        }
-                    }
+                    this->portController->SendData(command.Command.c_str());
+                }  
+                else
+                {
+                    this->portController->SendByteStream(command.Payload->image, command.Payload->size);
                 }
+                
+                testResponse = this->portController->ReadData(true);
+                if (!this->stringParser->HasString(testResponse,command.ExpectedResponse))
+                {    
+                    fialedResponse = true;
+                }
+                
+                iter++;
             }
         }
     }

@@ -7,5 +7,6 @@ class ATCommandSequenceController : public IATCommandSequenceController
 public:
     std::vector<ATCommand> SendMMSCommandSequence(CameraImage cameraImage, std::string number); 
     std::vector<ATCommand> SendSMSCommandSequence(std::string message, std::string number);
+    std::vector<ATCommand> ReadSMSCommandSequence();
 };
 #endif

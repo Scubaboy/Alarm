@@ -2,14 +2,14 @@
 
 ReceivedMessage::ReceivedMessage()
 {
-    
-
+    this->isValid = false;
 }
 ReceivedMessage::ReceivedMessage (std::string message, std::string dateTime, std::string number)
 {
     this->message = message;
     this->number = number;
     this->dateTime = dateTime;
+    this->isValid = true;
 }
     
 std::string ReceivedMessage::Message()
@@ -25,4 +25,9 @@ std::string ReceivedMessage::DateTime()
 std::string ReceivedMessage::Number()
 {
     return this->number;
+}
+
+bool ReceivedMessage::IsValid()
+{
+    return this->isValid;
 }

@@ -12,36 +12,55 @@
 #include "IRCameraController.h"
 #include "ICameraController.h"
 #include "CameraImage.h"
+#include "IATCommandSequenceController.h"
+#include "ATCommandSequenceController.h"
+#include "CommandController.h"
+#include "SystemStateCmdController.h"
+#include "ActiveActionController.h"
+#include "PassiveActionController.h"
+#include "wiringPi.h"
 
 int main(int argc, char **argv)
 {
+    PIRSensor pirSensor;
     ATResponseStringParser atStringParser;
     FileLogger fileLogger = FileLogger("/home/pi/AlarmLogs/","AlarmLog.txt");
-    ILogger* logger = &fileLogger;
+    ATCommandSequenceController atCommandSequenceController;
     PiBaudLookUpController baudController;
     PiWiringGPIOController gpioController = PiWiringGPIOController(&fileLogger);
     SerialPortConfigController portController = SerialPortConfigController(&baudController, &fileLogger);
-    CommsGSMDeviceDriver gsmDriver = CommsGSMDeviceDriver(&fileLogger,&portController,&gpioController, &atStringParser);
+    CommsGSMDeviceDriver gsmDriver = CommsGSMDeviceDriver(&fileLogger,&portController,&gpioController, &atStringParser, &atCommandSequenceController);
     IRCameraController irCamera = IRCameraController(176,208);
-    ICameraController* camera = &irCamera;
-    
+    CommandController commandController;
+    PassiveActionController passiveActionController = PassiveActionController(&irCamera, &gsmDriver);
+    ActiveActionController activeActionController = ActiveActionController(&irCamera, &gsmDriver,&pirSensor);
+    SystemStateCmdController systemStateCmdController = SystemStateCmdController (&commandController, 
+                                                                                  &activeActionController, 
+                                                                                  &passiveActionController, 
+                                                                                  &fileLogger);
+                                                   
+    pirSensor.Initialise();                                               
+    fileLogger.Initialise();
+    irCamera.Initialise();
+    commandController.Initialise();
     gpioController.Initialise();
-    logger->Initialise();
     gsmDriver.Initialise();
-    camera->Initialise();
-    CameraImage imageData;
+    systemStateCmdController.Initialise();
     
-    imageData = camera->GrabImage();
-    gsmDriver.SendImage(imageData,"07725589216");
-    //gpioController.Initialise();
-    //logger->Initialise();
-    //gsmDriver.Initialise();
-    //auto mesg = gsmDriver.GetNextMsg();
-    //gsmDriver.SendMsg("BALANCE","20202");
-    //raspicam::RaspiCam camera;
-    //PIRSensor mySensor;
-    //PIRSensorType data = mySensor.ReadSensor();
+    while (true)
+    {
+        auto receivedMsg = gsmDriver.GetNextMsg();
+        
+        if (receivedMsg.IsValid())
+        {
+            auto command = atStringParser.BuildCommand(receivedMsg);
+            commandController.WriteCommand(command);
+        }
+        
+        systemStateCmdController.Update();
+        
+        delay(200);
+    }
     
-	//printf("hello world\n");
-	return 0;
+    return 0;
 }

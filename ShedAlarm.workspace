@@ -2,7 +2,7 @@
 <CodeLite_Workspace Name="ShedAlarm" Database="" Version="10.0.0">
   <Project Name="Alarm" Path="Alarm/Alarm.project" Active="Yes"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Debug" Selected="yes">
+    <WorkspaceConfiguration Name="Debug" Selected="no">
       <Environment/>
       <Project Name="Alarm" ConfigName="Debug"/>
     </WorkspaceConfiguration>

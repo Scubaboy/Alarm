@@ -11,10 +11,12 @@ public:
     std::string Message();
     std::string DateTime();
     std::string Number();
+    bool IsValid();
 private:
     std::string message;
     std::string dateTime;
     std::string number;
+    bool isValid;
     
 };
 #endif

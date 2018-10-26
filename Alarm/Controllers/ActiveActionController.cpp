@@ -1,7 +1,7 @@
 #include "ActiveActionController.h"
 
 ActiveActionController::ActiveActionController(ICameraController* cameraController, 
-                           ICommsController* commsController, 
+                           ICommsDeviceDriver* commsController, 
                            ISensor<PIRSensorType>* motionSensor)
 {
     this->cameraController = cameraController;

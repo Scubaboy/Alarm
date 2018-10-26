@@ -4,8 +4,6 @@
 #include "IWriteCommandController.h"
 #include <queue>
 
-using namespace std;
-
 class CommandController : public IReadCommandController, IWriteCommandController
 {
 public:
@@ -15,6 +13,6 @@ public:
     void Initialise();
 private:
     bool isInitialised;
-    queue<Command> commandQueue;
+    std::queue<Command> commandQueue;
 };
 #endif

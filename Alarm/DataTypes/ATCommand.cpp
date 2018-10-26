@@ -1,6 +1,6 @@
 #include "ATCommand.h"
 
-ATCommand::ATCommand(std::string command, std::string expectedResponse, unsigned char* payload)
+ATCommand::ATCommand(std::string command, std::string expectedResponse, CameraImage* payload)
 {
     this->Command = command;
     this->ExpectedResponse = expectedResponse;

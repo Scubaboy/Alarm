@@ -1,7 +1,7 @@
 #include "PassiveActionController.h"
 
 PassiveActionController::PassiveActionController(ICameraController* cameraController, 
-                                                 ICommsController* commsController)
+                                                 ICommsDeviceDriver* commsController)
 {
     this->cameraController = cameraController;
     this->commsController = commsController;

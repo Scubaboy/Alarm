@@ -10,5 +10,6 @@ class IATCommandSequenceController
 public:
     virtual std::vector<ATCommand> SendMMSCommandSequence(CameraImage cameraImage, std::string number) = 0; 
     virtual std::vector<ATCommand> SendSMSCommandSequence(std::string message, std::string number) = 0;
+    virtual std::vector<ATCommand> ReadSMSCommandSequence() = 0;
 };
 #endif

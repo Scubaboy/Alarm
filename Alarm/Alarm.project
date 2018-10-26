@@ -142,9 +142,24 @@
     <Configuration Name="Release" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-O2;-Wall" C_Options="-O2;-Wall" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
+        <IncludePath Value="./Interfaces"/>
+        <IncludePath Value="./Sensors"/>
+        <IncludePath Value="./DataTypes"/>
+        <IncludePath Value="./Loggers"/>
+        <IncludePath Value="/usr/local/include/raspicam"/>
+        <IncludePath Value="./Controllers"/>
+        <IncludePath Value="./DeviceControllers"/>
+        <IncludePath Value="./Parsers"/>
+        <IncludePath Value="./ATCommandSequenceControllers"/>
         <Preprocessor Value="NDEBUG"/>
       </Compiler>
-      <Linker Options="" Required="yes"/>
+      <Linker Options="" Required="yes">
+        <LibraryPath Value="/usr/local/lib"/>
+        <LibraryPath Value="/usr/lib"/>
+        <Library Value="wiringPi"/>
+        <Library Value="raspicam"/>
+        <Library Value="boost_regex"/>
+      </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <BuildSystem Name="Default"/>

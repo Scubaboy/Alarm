@@ -2,18 +2,18 @@
 ## Auto Generated makefile by CodeLite IDE
 ## any manual changes will be erased      
 ##
-## Debug
+## Release
 ProjectName            :=Alarm
-ConfigurationName      :=Debug
+ConfigurationName      :=Release
 WorkspacePath          :=/home/pi/Documents/ShedAlarm
 ProjectPath            :=/home/pi/Documents/ShedAlarm/Alarm
-IntermediateDirectory  :=./Debug
+IntermediateDirectory  :=./Release
 OutDir                 := $(IntermediateDirectory)
 CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=
-Date                   :=17/10/18
+Date                   :=26/10/18
 CodeLitePath           :=/home/pi/.codelite
 LinkerName             :=/usr/bin/g++
 SharedObjectLinkerName :=/usr/bin/g++ -shared -fPIC
@@ -28,7 +28,7 @@ LibraryPathSwitch      :=-L
 PreprocessorSwitch     :=-D
 SourceSwitch           :=-c 
 OutputFile             :=$(IntermediateDirectory)/$(ProjectName)
-Preprocessors          :=
+Preprocessors          :=$(PreprocessorSwitch)NDEBUG 
 ObjectSwitch           :=-o 
 ArchiveOutputSwitch    := 
 PreprocessOnlySwitch   :=-E
@@ -50,8 +50,8 @@ LibPath                := $(LibraryPathSwitch). $(LibraryPathSwitch)/usr/local/l
 AR       := /usr/bin/ar rcu
 CXX      := /usr/bin/g++
 CC       := /usr/bin/gcc
-CXXFLAGS :=  -g -O0 -Wall $(Preprocessors)
-CFLAGS   :=  -g -O0 -Wall $(Preprocessors)
+CXXFLAGS :=  -O2 -Wall $(Preprocessors)
+CFLAGS   :=  -O2 -Wall $(Preprocessors)
 ASFLAGS  := 
 AS       := /usr/bin/as
 
@@ -80,11 +80,11 @@ $(OutputFile): $(IntermediateDirectory)/.d $(Objects)
 	$(LinkerName) $(OutputSwitch)$(OutputFile) @$(ObjectsFileList) $(LibPath) $(Libs) $(LinkOptions)
 
 MakeIntermediateDirs:
-	@test -d ./Debug || $(MakeDirCommand) ./Debug
+	@test -d ./Release || $(MakeDirCommand) ./Release
 
 
 $(IntermediateDirectory)/.d:
-	@test -d ./Debug || $(MakeDirCommand) ./Debug
+	@test -d ./Release || $(MakeDirCommand) ./Release
 
 PreBuild:
 
@@ -242,6 +242,6 @@ $(IntermediateDirectory)/ATCommandSequenceControllers_ATCommandSequenceControlle
 ## Clean
 ##
 clean:
-	$(RM) -r ./Debug/
+	$(RM) -r ./Release/
 
 
